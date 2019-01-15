@@ -79,5 +79,5 @@ for epoch in range(num_epochs):  # Loop over the dataset multiple times
     #                                                                    loss.item()))
     #     writer.add_scalar('train_loss', loss.item(), total_step * epoch + step + 1)
 torch.save(model.state_dict(), 'model/' + log + '.pt')
-# writer.close()
+writer.close()
 print('Finished Training')
