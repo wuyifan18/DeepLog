@@ -53,7 +53,7 @@ class Model(nn.Module):
 model = Model(input_size, hidden_size, num_layers, num_classes).to(device)
 seq_dataset = generate('hdfs_train')
 dataloader = DataLoader(seq_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
-writer = SummaryWriter(log_dir='logs/' + log)
+writer = SummaryWriter(log_dir='log/' + log)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -62,6 +62,7 @@ optimizer = optim.Adam(model.parameters())
 # Train the model
 total_step = len(dataloader)
 for epoch in range(num_epochs):  # Loop over the dataset multiple times
+    train_loss = 0
     for step, (seq, label) in enumerate(dataloader):
         # Forward pass
         seq = seq.clone().detach().view(-1, window_size, input_size).to(device)
@@ -71,13 +72,10 @@ for epoch in range(num_epochs):  # Loop over the dataset multiple times
         # Backward and optimize
         optimizer.zero_grad()
         loss.backward()
+        train_loss += loss.item()
         optimizer.step()
-    print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, loss.item()))
-    writer.add_scalar('train_loss', loss.item(), epoch + 1)
-    # if (step + 1) % 100 == 0:
-    #     print('Epoch [{}/{}], Step [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, step + 1, total_step,
-    #                                                                    loss.item()))
-    #     writer.add_scalar('train_loss', loss.item(), total_step * epoch + step + 1)
+    print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / len(train_loader.dataset)))
+    writer.add_scalar('train_loss', train_loss / len(train_loader.dataset), epoch + 1)
 torch.save(model.state_dict(), 'model/' + log + '.pt')
 writer.close()
 print('Finished Training')
