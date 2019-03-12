@@ -15,12 +15,16 @@ model_path = 'model/Adam with batch_size=2048;epoch=300.pt'
 
 
 def generate(name):
-    hdfs = set()
+    # If you what to replicate the DeepLog paper results(Actually, I have a better result than DeepLog paper results),
+    # you should use the 'list' not 'set' to obtain the full dataset, I use 'set' just for test and acceleration.
+    # hdfs = set()
+    hdfs = []
     with open('data/' + name, 'r') as f:
         for line in f.readlines():
             line = list(map(lambda n: n - 1, map(int, line.strip().split())))
             line = line + [-1] * (window_size + 1 - len(line))
-            hdfs.add(tuple(line))
+            # hdfs.add(tuple(line))
+            hdfs.append(tuple(line))
     print('Number of sessions({}): {}'.format(name, len(hdfs)))
     return hdfs
 
