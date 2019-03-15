@@ -1,3 +1,0 @@
-python>=3.6
-torch>=1.0.0
-tensorboardX>=1.5
