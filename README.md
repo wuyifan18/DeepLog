@@ -12,3 +12,6 @@ The dataset can be downloaded [HERE](https://www.cs.utah.edu/~mind/papers/deeplo
 
 ## Reference
 Min Du, Feifei Li, Guineng Zheng, Vivek Srikumar. "Deeplog: Anomaly detection and diagnosis from system logs through deep learning." ACM SIGSAC Conference on Computer and Communications Security(CCS), 2017.
+
+
+If you have any questions, please open an [issue](https://github.com/wuyifan18/DeepLog/issues).
