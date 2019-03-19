@@ -74,7 +74,7 @@ for epoch in range(num_epochs):  # Loop over the dataset multiple times
         loss.backward()
         train_loss += loss.item()
         optimizer.step()
-    print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / len(train_loader.dataset)))
+    print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / len(dataloader.dataset)))
     writer.add_scalar('train_loss', train_loss / len(dataloader.dataset), epoch + 1)
 torch.save(model.state_dict(), 'model/' + log + '.pt')
 writer.close()
