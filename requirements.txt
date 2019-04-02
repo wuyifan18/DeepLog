@@ -1,0 +1,2 @@
+torch==1.0.1
+tensorboardX==1.6
