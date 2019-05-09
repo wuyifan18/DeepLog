@@ -15,3 +15,5 @@ Min Du, Feifei Li, Guineng Zheng, Vivek Srikumar. "Deeplog: Anomaly detection an
 
 
 If you have any questions, please open an [issue](https://github.com/wuyifan18/DeepLog/issues).
+
+# Let's improve this project and welcome to pull requests!
