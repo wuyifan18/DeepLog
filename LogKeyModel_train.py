@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from tensorboardX import SummaryWriter
 from torch.utils.data import TensorDataset, DataLoader
+import argparse
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -50,32 +51,43 @@ class Model(nn.Module):
         return out
 
 
-model = Model(input_size, hidden_size, num_layers, num_classes).to(device)
-seq_dataset = generate('hdfs_train')
-dataloader = DataLoader(seq_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
-writer = SummaryWriter(log_dir='log/' + log)
+if __name__ == '__main__':
 
-# Loss and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-num_layers', default=2, type=int)
+    parser.add_argument('-hidden_size', default=64, type=int)
+    parser.add_argument('-window_size', default=10, type=int)
+    args = parser.parse_args()
+    num_layers = args.num_layers
+    hidden_size = args.hidden_size
+    window_size = args.window_size
 
-# Train the model
-total_step = len(dataloader)
-for epoch in range(num_epochs):  # Loop over the dataset multiple times
-    train_loss = 0
-    for step, (seq, label) in enumerate(dataloader):
-        # Forward pass
-        seq = seq.clone().detach().view(-1, window_size, input_size).to(device)
-        output = model(seq)
-        loss = criterion(output, label.to(device))
+    model = Model(input_size, hidden_size, num_layers, num_classes).to(device)
+    seq_dataset = generate('hdfs_train')
+    dataloader = DataLoader(seq_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+    writer = SummaryWriter(log_dir='log/' + log)
 
-        # Backward and optimize
-        optimizer.zero_grad()
-        loss.backward()
-        train_loss += loss.item()
-        optimizer.step()
-    print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / len(dataloader.dataset)))
-    writer.add_scalar('train_loss', train_loss / len(dataloader.dataset), epoch + 1)
-torch.save(model.state_dict(), 'model/' + log + '.pt')
-writer.close()
-print('Finished Training')
+    # Loss and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters())
+
+    # Train the model
+    total_step = len(dataloader)
+    for epoch in range(num_epochs):  # Loop over the dataset multiple times
+        train_loss = 0
+        for step, (seq, label) in enumerate(dataloader):
+            # Forward pass
+            seq = seq.clone().detach().view(-1, window_size, input_size).to(device)
+            output = model(seq)
+            loss = criterion(output, label.to(device))
+
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
+            train_loss += loss.item()
+            optimizer.step()
+        print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / len(dataloader.dataset)))
+        writer.add_scalar('train_loss', train_loss / len(dataloader.dataset), epoch + 1)
+    torch.save(model.state_dict(), 'model/' + log + '.pt')
+    writer.close()
+    print('Finished Training')
