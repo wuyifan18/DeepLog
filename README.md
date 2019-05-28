@@ -4,8 +4,8 @@ A Pytorch implementation of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/d
 
 ## Requirement
 * python>=3.6
-* pytorch>=1.0.0
-* tensorboardX>=1.5
+* pytorch==1.0.1
+* tensorboardX==1.7
 
 ## Dataset
 The dataset can be downloaded [HERE](https://www.cs.utah.edu/~mind/papers/deeplog_misc.html).
