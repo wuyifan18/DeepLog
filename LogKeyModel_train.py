@@ -15,7 +15,7 @@ num_layers = 2
 num_classes = 28
 num_epochs = 300
 batch_size = 2048
-log = 'Adam with batch_size=2048;epoch=300'
+log = '1'
 
 
 def generate(name):
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     model = Model(input_size, hidden_size, num_layers, num_classes).to(device)
     seq_dataset = generate('hdfs_train')
     dataloader = DataLoader(seq_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
-    writer = SummaryWriter(log_dir='log/' + log)
+    writer = SummaryWriter(logdir='log/' + log)
 
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
