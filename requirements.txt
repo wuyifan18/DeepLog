@@ -1,2 +1,2 @@
-torch==1.0.1
+pytorch==1.0.1
 tensorboardX==1.7
