@@ -4,6 +4,7 @@ import torch.optim as optim
 from tensorboardX import SummaryWriter
 from torch.utils.data import TensorDataset, DataLoader
 import argparse
+import os
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -15,7 +16,8 @@ num_layers = 2
 num_classes = 28
 num_epochs = 300
 batch_size = 2048
-log = 'Adam with batch_size=2048;epoch=300'
+model_dir = 'model'
+log = 'Adam_batch_size=' + str(batch_size) + ';epoch=' + str(num_epochs)
 
 
 def generate(name):
@@ -88,6 +90,8 @@ if __name__ == '__main__':
             optimizer.step()
         print('Epoch [{}/{}], Train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / len(dataloader.dataset)))
         writer.add_scalar('train_loss', train_loss / len(dataloader.dataset), epoch + 1)
-    torch.save(model.state_dict(), 'model/' + log + '.pt')
+    if not os.path.isdir(model_dir):
+        os.makedirs(model_dir)
+    torch.save(model.state_dict(), model_dir + '/' + log + '.pt')
     writer.close()
     print('Finished Training')
