@@ -12,7 +12,7 @@ hidden_size = 64
 num_layers = 2
 num_classes = 28
 num_candidates = 9
-model_path = 'model/Adam with batch_size=2048;epoch=300.pt'
+model_path = 'model/Adam_batch_size=2048_epoch=300.pt'
 
 
 def generate(name):
@@ -21,10 +21,10 @@ def generate(name):
     hdfs = set()
     # hdfs = []
     with open('data/' + name, 'r') as f:
-        for line in f.readlines():
-            line = list(map(lambda n: n - 1, map(int, line.strip().split())))
-            line = line + [-1] * (window_size + 1 - len(line))
-            hdfs.add(tuple(line))
+        for ln in f.readlines():
+            ln = list(map(lambda n: n - 1, map(int, ln.strip().split())))
+            ln = ln + [-1] * (window_size + 1 - len(ln))
+            hdfs.add(tuple(ln))
             # hdfs.append(tuple(line))
     print('Number of sessions({}): {}'.format(name, len(hdfs)))
     return hdfs
@@ -38,10 +38,10 @@ class Model(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_keys)
 
-    def forward(self, input):
-        h0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size).to(device)
-        c0 = torch.zeros(self.num_layers, input.size(0), self.hidden_size).to(device)
-        out, _ = self.lstm(input, (h0, c0))
+    def forward(self, x):
+        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
+        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
+        out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
         return out
 
