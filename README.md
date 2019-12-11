@@ -9,6 +9,7 @@ A Pytorch implementation of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/d
 ## Dataset
 The dataset can be downloaded [HERE](https://www.cs.utah.edu/~mind/papers/deeplog_misc.html).
 
+The prefix of the website for hdfs logs is changed to http://people.iiis.tsinghua.edu.cn/~weixu/, you can download the original data from [raw log](http://people.iiis.tsinghua.edu.cn/~weixu/demobuild.zip) and [200nodes](http://people.iiis.tsinghua.edu.cn/~weixu/200nodes.rar).
 ## Reference
 Min Du, Feifei Li, Guineng Zheng, Vivek Srikumar. "Deeplog: Anomaly detection and diagnosis from system logs through deep learning." ACM SIGSAC Conference on Computer and Communications Security(CCS), 2017.
 
