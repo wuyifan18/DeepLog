@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import time
 import argparse
+from tqdm import tqdm
 
 # Device configuration
 device = torch.device("cpu")
@@ -16,18 +17,16 @@ model_path = 'model/Adam_batch_size=2048_epoch=300.pt'
 
 
 def generate(name):
-    # If you what to replicate the DeepLog paper results(Actually, I have a better result than DeepLog paper results),
-    # you should use the 'list' not 'set' to obtain the full dataset, I use 'set' just for test and acceleration.
-    hdfs = set()
-    # hdfs = []
+    hdfs = {}
+    length = 0
     with open('data/' + name, 'r') as f:
         for ln in f.readlines():
             ln = list(map(lambda n: n - 1, map(int, ln.strip().split())))
             ln = ln + [-1] * (window_size + 1 - len(ln))
-            hdfs.add(tuple(ln))
-            # hdfs.append(tuple(line))
+            hdfs[tuple(ln)] = hdfs.get(tuple(ln),0) + 1
+            length += 1
     print('Number of sessions({}): {}'.format(name, len(hdfs)))
-    return hdfs
+    return hdfs, length
 
 
 class Model(nn.Module):
@@ -63,14 +62,14 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(model_path))
     model.eval()
     print('model_path: {}'.format(model_path))
-    test_normal_loader = generate('hdfs_test_normal')
-    test_abnormal_loader = generate('hdfs_test_abnormal')
+    test_normal_loader, test_normal_length = generate('hdfs_test_normal')
+    test_abnormal_loader, test_abnormal_length = generate('hdfs_test_abnormal')
     TP = 0
     FP = 0
     # Test the model
     start_time = time.time()
     with torch.no_grad():
-        for line in test_normal_loader:
+        for line in tqdm(test_normal_loader.keys()):
             for i in range(len(line) - window_size):
                 seq = line[i:i + window_size]
                 label = line[i + window_size]
@@ -79,10 +78,10 @@ if __name__ == '__main__':
                 output = model(seq)
                 predicted = torch.argsort(output, 1)[0][-num_candidates:]
                 if label not in predicted:
-                    FP += 1
+                    FP += test_normal_loader[line]
                     break
     with torch.no_grad():
-        for line in test_abnormal_loader:
+        for line in tqdm(test_abnormal_loader.keys()):
             for i in range(len(line) - window_size):
                 seq = line[i:i + window_size]
                 label = line[i + window_size]
@@ -91,11 +90,11 @@ if __name__ == '__main__':
                 output = model(seq)
                 predicted = torch.argsort(output, 1)[0][-num_candidates:]
                 if label not in predicted:
-                    TP += 1
+                    TP += test_abnormal_loader[line]
                     break
 
     # Compute precision, recall and F1-measure
-    FN = len(test_abnormal_loader) - TP
+    FN = test_abnormal_length - TP
     P = 100 * TP / (TP + FP)
     R = 100 * TP / (TP + FN)
     F1 = 2 * P * R / (P + R)
