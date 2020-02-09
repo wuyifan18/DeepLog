@@ -3,7 +3,7 @@ A Pytorch implementation of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/d
 
 ## Requirement
 * python>=3.6
-* pytorch==1.3.1
+* pytorch==1.4
 * tensorboard==2.0.2
 
 ## Dataset

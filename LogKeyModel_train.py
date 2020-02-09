@@ -1,3 +1,4 @@
+import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,16 +9,6 @@ import os
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# Hyperparameters
-window_size = 10
-input_size = 1
-hidden_size = 64
-num_layers = 2
-num_classes = 28
-num_epochs = 300
-batch_size = 2048
-model_dir = 'model'
-log = 'Adam_batch_size={}_epoch={}'.format(str(batch_size), str(num_epochs))
 
 
 def generate(name):
@@ -55,6 +46,13 @@ class Model(nn.Module):
 
 if __name__ == '__main__':
 
+    # Hyperparameters
+    num_classes = 28
+    num_epochs = 300
+    batch_size = 2048
+    input_size = 1
+    model_dir = 'model'
+    log = 'Adam_batch_size={}_epoch={}'.format(str(batch_size), str(num_epochs))
     parser = argparse.ArgumentParser()
     parser.add_argument('-num_layers', default=2, type=int)
     parser.add_argument('-hidden_size', default=64, type=int)
@@ -74,6 +72,7 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters())
 
     # Train the model
+    start_time = time.time()
     total_step = len(dataloader)
     for epoch in range(num_epochs):  # Loop over the dataset multiple times
         train_loss = 0
@@ -91,6 +90,8 @@ if __name__ == '__main__':
             writer.add_graph(model, seq)
         print('Epoch [{}/{}], train_loss: {:.4f}'.format(epoch + 1, num_epochs, train_loss / total_step))
         writer.add_scalar('train_loss', train_loss / total_step, epoch + 1)
+    elapsed_time = time.time() - start_time
+    print('elapsed_time: {:.3f}s'.format(elapsed_time))
     if not os.path.isdir(model_dir):
         os.makedirs(model_dir)
     torch.save(model.state_dict(), model_dir + '/' + log + '.pt')

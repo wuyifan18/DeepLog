@@ -5,14 +5,6 @@ import argparse
 
 # Device configuration
 device = torch.device("cpu")
-# Hyperparameters
-window_size = 10
-input_size = 1
-hidden_size = 64
-num_layers = 2
-num_classes = 28
-num_candidates = 9
-model_path = 'model/Adam_batch_size=2048_epoch=300.pt'
 
 
 def generate(name):
@@ -25,7 +17,7 @@ def generate(name):
             ln = list(map(lambda n: n - 1, map(int, ln.strip().split())))
             ln = ln + [-1] * (window_size + 1 - len(ln))
             hdfs.add(tuple(ln))
-            # hdfs.append(tuple(line))
+            # hdfs.append(tuple(ln))
     print('Number of sessions({}): {}'.format(name, len(hdfs)))
     return hdfs
 
@@ -48,6 +40,10 @@ class Model(nn.Module):
 
 if __name__ == '__main__':
 
+    # Hyperparameters
+    num_classes = 28
+    input_size = 1
+    model_path = 'model/Adam_batch_size=2048_epoch=300.pt'
     parser = argparse.ArgumentParser()
     parser.add_argument('-num_layers', default=2, type=int)
     parser.add_argument('-hidden_size', default=64, type=int)
@@ -93,7 +89,8 @@ if __name__ == '__main__':
                 if label not in predicted:
                     TP += 1
                     break
-
+    elapsed_time = time.time() - start_time
+    print('elapsed_time: {:.3f}s'.format(elapsed_time))
     # Compute precision, recall and F1-measure
     FN = len(test_abnormal_loader) - TP
     P = 100 * TP / (TP + FP)
@@ -101,5 +98,3 @@ if __name__ == '__main__':
     F1 = 2 * P * R / (P + R)
     print('false positive (FP): {}, false negative (FN): {}, Precision: {:.3f}%, Recall: {:.3f}%, F1-measure: {:.3f}%'.format(FP, FN, P, R, F1))
     print('Finished Predicting')
-    elapsed_time = time.time() - start_time
-    print('elapsed_time: {}'.format(elapsed_time))
