@@ -9,9 +9,9 @@ A Pytorch implementation of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/d
 * tensorboard==2.0.2
 
 ## Dataset
-~~The dataset can be downloaded [HERE](https://www.cs.utah.edu/~mind/papers/deeplog_misc.html).~~ The website can't accessed now, but you can find the HDFS data in this repository. 
+~~The dataset can be downloaded [HERE](https://www.cs.utah.edu/~mind/papers/deeplog_misc.html).~~ The website can't accessed now, but you can find the HDFS data in this repository.
 
-The prefix of the website for hdfs logs is changed to http://people.iiis.tsinghua.edu.cn/~weixu/, you can download the original data from [raw log](http://people.iiis.tsinghua.edu.cn/~weixu/demobuild.zip) and [200nodes](http://people.iiis.tsinghua.edu.cn/~weixu/200nodes.rar).
+The original HDFS logs can be found [HERE] (http://people.iiis.tsinghua.edu.cn/~weixu/sospdata.html).
 
 ## Visualization
 Run the following code in terminal, then navigate to https://localhost:6006.
