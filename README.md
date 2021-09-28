@@ -1,5 +1,5 @@
 # Attention2Log
-A Transformer-basd variant of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/deeplog.pdf)'s log key anomaly detection model.
+[Attention2Log](https://github.com/quocdat32461997/attention2log) contains Transformer-basd variants of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/deeplog.pdf)'s log key anomaly detection model.
 
 *If you are confusing about how to extract log key (i.e. log template), I recommend using **Drain** which is proposed in this [paper](https://pinjiahe.github.io/papers/ICWS17.pdf). As far as I know, it is the most effective log parsing method. By the way, there is a toolkit and benchmarks for automated log parsing in this [repository](https://github.com/logpai/logparser).*
 
