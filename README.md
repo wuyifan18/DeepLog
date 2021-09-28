@@ -1,5 +1,5 @@
-# DeepLog
-A Pytorch implementation of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/deeplog.pdf)'s log key anomaly detection model.
+# LogTransformeer
+A Transformer-basd variant of [DeepLog](https://www.cs.utah.edu/~lifeifei/papers/deeplog.pdf)'s log key anomaly detection model.
 
 *If you are confusing about how to extract log key (i.e. log template), I recommend using **Drain** which is proposed in this [paper](https://pinjiahe.github.io/papers/ICWS17.pdf). As far as I know, it is the most effective log parsing method. By the way, there is a toolkit and benchmarks for automated log parsing in this [repository](https://github.com/logpai/logparser).*
 
