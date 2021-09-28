@@ -14,10 +14,14 @@ def get_args():
     parser.add_argument('--data',
                         type=str,
                         help='Path to training data.')
-    parser.add_argument('--eval',
+    parser.add_argument('--eval-data',
                         type=str,
                         default=None,
                         help='Path to evaluation data.')
+    parser.add_argument('--shuffle',
+                        default=False,
+                        action='store_true',
+                        help='Flag to shuffle dataset.')
     parser.add_argument('--iter',
                         type=int,
                         default=50,
@@ -39,8 +43,11 @@ def get_args():
                         default='./saved',
                         help='Directory to save trained models, params, and logs.')
 
+    # parse args
+    args = parser.parse_args()
+
     # create saved folder if not existing
     if not os.path.exists(args.saved):
         os.makedirs(args.saved)
 
-    return parser.parse_args()
+    return args

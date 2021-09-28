@@ -3,12 +3,50 @@
 import os
 import torch
 
-class Dataset(torch.utils.data.Dataset):
-    def __init__(sefl):
-        pass
+
+class LogDataset(torch.utils.data.Dataset):
+    def __init__(self, data, testing=False):
+        super(LogDataset, self).__init__()
+
+        # read data
+        self._read_data(data, testing=testing)
+
+    def _read_data(self, data, testing=False):
+        # Function to read HFDS data
+        # Args:
+        #   - data: str
+        #       Path to data
+        #   - testing: bool
+        #       Flag to indicate if data is a testing dataset
+        #       If a testing dataset, return inputs only.
+
+        # TODO: handle testing datasets when testing=True
+        assert os.path.exists(data), 'Provided data {} does not exists'.format(data)
+
+        num_sessions = 0
+        inputs, labels = [], []
+        with open(data, 'r') as file:
+            for line in file.readlines():
+                num_sessions += 1
+                line = tuple(map(lambda n: n - 1, map(int, line.strip().split())))
+                for i in range(len(line) - window_size):
+                    inputs.append(line[i:i + window_size])
+                    labels.append(line[i + window_size])
+
+        # print dataset stats
+        self.num_session = num_sessions
+        self.num_seq = len(inputs)
+        print('Printing dataset statistics: {}'.format(data))
+        print('Number of sessions({}): {}'.format(data, self.num_session))
+        print('Number of seqs({}): {}'.format(data, self.num_seq))
+
+        # convert inputs and labels to tensors
+        self.inputs = torch.tensor(inputs, dtype=torch.float)
+        self.labels = torch.tensor(labels)
 
     def __len__(self):
-        return None
+        return len(self.labels)
 
     def __getitem__(self, idx):
-        return None
+        # group inputs and labels together
+        return self.inputs[idx], self.labels[idx]
