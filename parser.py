@@ -1,10 +1,11 @@
 # parser.py
 
+import os
 import argparse
 
 
 def get_args():
-    # Function to get command-line arguemnts
+    # Function to get command-line arguments
 
     # initialize argument parser
     parser = argparse.ArgumentParser()
@@ -33,5 +34,13 @@ def get_args():
                         default=False,
                         action='store_true',
                         help='Flag to use the learning-rate decay.')
+    parser.add_argument('--saved',
+                        type=str,
+                        default='./saved',
+                        help='Directory to save trained models, params, and logs.')
+
+    # create saved folder if not existing
+    if not os.path.exists(args.saved):
+        os.makedirs(args.saved)
 
     return parser.parse_args()
