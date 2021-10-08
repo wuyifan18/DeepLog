@@ -43,6 +43,19 @@ def process_hdfs(args, log_format):
     for file in os.listdir(args.input_dir):
         if file.endswith('.log'):
             parser.parse(file)
+
+        # get event id map
+        df = pd.read_csv(os.path.join(args.output_dir, 'HDFS.log_structured.csv'))
+        event_id_map = dict()
+        for i, event_id in enumerate(df['EventId'].unique(), 1):
+            event_id_map[event_id] = i
+
+        # transfer series of logs into intervals of log series
+        for file in os.listdir(args.output_dir):
+            if file.endswith('_structured.csv'):
+                ds = pd.read_csv(os.path.join(args.output_dir, file))
+                ds = transfer(ds, event_id_map, args.freq)
+                generate(os.path.join(args.output_dir, re.sub('.csv', '.txt', file)), ds)
     return None
 
 
