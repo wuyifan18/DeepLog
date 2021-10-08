@@ -10,5 +10,6 @@
   "num_layer": 3,
   "num_head": 8,
   "dropout": 0.0,
-  "num_class": 55
+  "num_class": 55,
+  "saved": "./saved"
 }
