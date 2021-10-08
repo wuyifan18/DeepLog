@@ -1,0 +1,14 @@
+{
+  "window_size": 10,
+  "shuffle": false,
+  "iterations": 50,
+  "batch_size": 20,
+  "lr": 0.01,
+  "lr_decay": false,
+  "encoder_hidden_size": 512,
+  "decoder_hidden_size": 128,
+  "num_layer": 3,
+  "num_head": 8,
+  "dropout": 0.0,
+  "num_class": 55
+}

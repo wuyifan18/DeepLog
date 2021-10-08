@@ -11,21 +11,22 @@ class PositionEncoding(torch.nn.Module):
     def forward(self, inputs):
         return inputs
 
+
 class LogGenerator(torch.nn.Module):
     def __init__(self, input_hidden_size, hidden_size, num_class, num_layer=2, dropout=0.0, name='LogGenerator'):
         super(LogGenerator, self).__init__()
 
         # initialize hidden layers
         self.generator = [
-                torch.nn.Linear(input_hidden_size, hidden_size),
-                torch.nn.ReLU(),
-                torch.nn.Dropout(dropout)
-            ]
-        self.generator.extend([
-            torch.nn.Linear(hidden_size, hidden_size),
+            torch.nn.Linear(input_hidden_size, hidden_size),
             torch.nn.ReLU(),
             torch.nn.Dropout(dropout)
-        ] * (num_layer-1))
+        ]
+        self.generator.extend([
+                                  torch.nn.Linear(hidden_size, hidden_size),
+                                  torch.nn.ReLU(),
+                                  torch.nn.Dropout(dropout)
+                              ] * (num_layer - 1))
 
         # final layer
         self.generator.extend([
@@ -39,9 +40,11 @@ class LogGenerator(torch.nn.Module):
     def forward(self, inputs):
         return self.generator(inputs)
 
+
 class LogTransformer(torch.nn.Module):
     # A Transformer-based encoder for abnormally detection on logs
-    def __init__(self, num_class, encoder_hidden_size, decoder_hidden_size, num_layer, num_head, dropout, name='LogTransformer'):
+    def __init__(self, num_class, encoder_hidden_size, decoder_hidden_size, num_layer, num_head, dropout,
+                 name='LogTransformer'):
         super(LogTransformer, self).__init__()
 
         # initialize encoder
@@ -50,13 +53,13 @@ class LogTransformer(torch.nn.Module):
                                                                   nhead=num_head,
                                                                   dropout=dropout)
         self.encoder = torch.nn.TransformerEncoder(self.transformer_layer,
-                                                               num_layers=num_layer)
+                                                   num_layers=num_layer)
 
         # initialize decoder
         self.decoder = LogGenerator(input_hidden_size=encoder_hidden_size,
-                                      hidden_size=decoder_hidden_size,
-                                      num_class=num_class,
-                                      dropout=dropout)
+                                    hidden_size=decoder_hidden_size,
+                                    num_class=num_class,
+                                    dropout=dropout)
 
     def forward(self, inputs):
         # encode logs-positions and logs
