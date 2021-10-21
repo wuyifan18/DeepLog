@@ -57,6 +57,7 @@ def process_hdfs(args, log_format):
                 ds = transfer(ds, event_id_map, args.freq)
                 generate(os.path.join(args.output_dir, re.sub('.csv', '.txt', file)), ds)
         # save vocab
+        event_id_map['[UNK]'] = -1 # add unknown log key
         with open(os.path.join(args.output_dir, 'hdfs_vocab.txt'), 'w') as file:
             file.write('\n'.join([str(v) + ' ' + str(k) for k,v in event_id_map.items()]))
     return None
