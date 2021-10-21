@@ -3,6 +3,7 @@
 import os
 import torch
 
+from a2l.utils import read_vocab
 
 class OpenStackDataset(torch.utils.data.Dataset):
     def __init__(self, data, testing=False):
@@ -25,8 +26,9 @@ class OpenStackDataset(torch.utils.data.Dataset):
             return self.inputs[idx], self.labels[idx]
 
 class LogDataset(torch.utils.data.Dataset):
-    def __init__(self, data, window_size):
+    def __init__(self, data, window_size, vocab):
         super(LogDataset, self).__init__()
+        self.vocab = read_vocab(vocab)
         self.window_size = window_size
 
         # read data
@@ -66,6 +68,9 @@ class LogDataset(torch.utils.data.Dataset):
         labels = torch.tensor(labels)
 
         return inputs, labels
+
+    def get_vocab_size(self):
+        return len(self.vocab)
 
     def __len__(self):
         return len(self.labels)

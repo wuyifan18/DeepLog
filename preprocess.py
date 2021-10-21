@@ -59,7 +59,7 @@ def process_hdfs(args, log_format):
                 generate(os.path.join(args.output_dir, re.sub('.csv', '.txt', file)), ds)
 
         # save vocab
-        with open(os.path.join(args.output_dir, 'hdfs_vocab.txt'), 'w') as file:
+        with open(os.path.join(args.output_dir, 'vocab.txt'), 'w') as file:
             file.write('\n'.join([str(v) + ' ' + str(k) for k,v in event_id_map.items()]))
     return None
 
@@ -94,7 +94,7 @@ def process_openstack(args, log_format):
             generate(os.path.join(args.output_dir, re.sub('.csv', '.txt', file)), ds)
 
     # save vocab
-    with open(os.path.join(args.output_dir, 'openstack_vocab.txt'), 'w') as file:
+    with open(os.path.join(args.output_dir, 'vocab.txt'), 'w') as file:
         file.write('\n'.join([str(v) + ' ' + str(k) for k,v in event_id_map.items()]))
     return None
 

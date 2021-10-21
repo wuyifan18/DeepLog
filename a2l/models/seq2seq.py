@@ -1,7 +1,6 @@
 # seq2seqs.py
 
 import torch
-from transformers import BartModel, BartConfig
 
 class LogBart(torch.nn.Module):
     # A Bart model for abnormaly detection

@@ -54,6 +54,10 @@ def get_model_args():
                         type=str,
                         default=None,
                         help='Path to evaluation data.')
+    parser.add_argument('--vocab',
+                        type=str,
+                        default=None,
+                        help='Path to vocab file.')
     # parse args
     args = parser.parse_args()
 
