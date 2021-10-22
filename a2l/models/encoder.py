@@ -1,7 +1,7 @@
 # berts.py
 
 import torch
-
+from torch.nn import functional as F
 
 class PositionEncoding(torch.nn.Module):
     def __init__(self, embed_size, name='PositionEncoding'):
@@ -12,60 +12,72 @@ class PositionEncoding(torch.nn.Module):
         return inputs
 
 
-class LogGenerator(torch.nn.Module):
-    def __init__(self, input_hidden_size, hidden_size, num_class, num_layer=2, dropout=0.0, name='LogGenerator'):
-        super(LogGenerator, self).__init__()
+class LogClassifier(torch.nn.Module):
+    def __init__(self, input_hidden_size, hidden_size, num_class, num_layer=2, dropout=0.0, name='LogClassifier'):
+        super(LogClassifier, self).__init__()
 
         # initialize hidden layers
-        self.generator = [
-            torch.nn.Linear(input_hidden_size, hidden_size),
-            torch.nn.ReLU(),
-            torch.nn.Dropout(dropout)
-        ]
-        self.generator.extend([
-                                  torch.nn.Linear(hidden_size, hidden_size),
-                                  torch.nn.ReLU(),
-                                  torch.nn.Dropout(dropout)
-                              ] * (num_layer - 1))
+        self.classifier = []
+        for _ in range(num_layer):
+            self.classifier.extend([
+                torch.nn.Linear(input_hidden_size, hidden_size),
+                torch.nn.ReLU(),
+                torch.nn.Dropout(dropout)
+            ])
+            input_hidden_size = hidden_size
 
         # final layer
-        self.generator.extend([
-            torch.nn.Linear(hidden_size, num_class),
-            torch.nn.Softmax()
-        ])
+        self.classifier.append(torch.nn.Linear(hidden_size, num_class))
 
         # convert list ot ModuleList
-        self.generator = torch.nn.ModuleList(self.generator)
+        self.classifier = torch.nn.ModuleList(self.classifier)
 
     def forward(self, inputs):
-        return self.generator(inputs)
+        return self.classifier(inputs)
 
 
 class LogTransformer(torch.nn.Module):
     # A Transformer-based encoder for abnormally detection on logs
-    def __init__(self, num_class, encoder_hidden_size, decoder_hidden_size, num_layer, num_head, dropout,
-                 name='LogTransformer'):
+    def __init__(self, num_class, vocab_size, embed_size, hidden_size, num_layer, num_head,
+                 dropout, decoder_hidden_size, name='LogTransformer'):
         super(LogTransformer, self).__init__()
 
+        # initialize embedding
+        self.log_embed = torch.nn.Embedding(num_embeddings=vocab_size, embedding_dim=embed_size)
+
         # initialize encoder
-        self.pos_encoder = PositionEncoding(encoder_hidden_size)
-        self.transformer_layer = torch.nn.TransformerEncoderLayer(d_model=encoder_hidden_size,
+        self.pos_encoder = PositionEncoding(hidden_size)
+        self.transformer_layer = torch.nn.TransformerEncoderLayer(d_model=hidden_size,
                                                                   nhead=num_head,
                                                                   dropout=dropout)
         self.encoder = torch.nn.TransformerEncoder(self.transformer_layer,
                                                    num_layers=num_layer)
 
         # initialize decoder
-        self.decoder = LogGenerator(input_hidden_size=encoder_hidden_size,
+        self.decoder = LogClassifier(input_hidden_size=hidden_size,
                                     hidden_size=decoder_hidden_size,
                                     num_class=num_class,
                                     dropout=dropout)
 
-    def forward(self, inputs):
-        # encode logs-positions and logs
-        pos_features = self.pos_encoder(inputs)
-        log_features = self.encoder(pos_features, inputs)
-        # predict next log entries
-        outputs = self.decoder(log_features)
+    def predict(self, inputs):
+        return None
 
-        return outputs
+    def copmpute_loss(self, outputs, labels):
+        # Function to compute loss
+        return F.cross_entropy(outputs, labels)
+
+    def forward(self, inputs, labels):
+        # embed logs-positions and logs
+        pos_features = self.pos_encoder(inputs['pos_inputs'])
+        log_features = self.log_embed(inputs['log_inputs'])
+        features = torch.cat([pos_features, log_features], dim=-1)
+
+        # encode
+        features = self.encoder(features, inputs)
+        # predict next log entries
+        outputs = self.decoder(features)
+
+        # compute loss
+        loss = self.compute_loss(outputs, labels)
+        
+        return loss

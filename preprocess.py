@@ -16,7 +16,7 @@ def transfer(df, event_id_map, freq='1min'):
 
     df['datetime'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
     df = df[['datetime', 'EventId']]
-    df['EventId'] = df['EventId'].map(lambda e: event_id_map[e] if e in event_id_map else -1)
+    df['EventId'] = df['EventId'].map(lambda e: event_id_map[e] if e in event_id_map else 0)
     deeplog_df = df.set_index('datetime').resample(freq).apply(_custom_resampler).reset_index()
     return deeplog_df
 
@@ -47,7 +47,7 @@ def process_hdfs(args, log_format):
         # get event id map
         df = pd.read_csv(os.path.join(args.output_dir, 'HDFS.log_structured.csv'))
         event_id_map = dict()
-        event_id_map['[UNK]'] = -1  # add unknown log key
+        event_id_map['[UNK]'] = 0  # add unknown log key
         for i, event_id in enumerate(df['EventId'].unique(), 1):
             event_id_map[event_id] = i
 
@@ -82,7 +82,7 @@ def process_openstack(args, log_format):
     # get event id map
     df = pd.read_csv(os.path.join(args.output_dir, 'openstack_normal1.log_structured.csv'))
     event_id_map = dict()
-    event_id_map['[UNK]'] = -1  # add unknown log key
+    event_id_map['[UNK]'] = 0  # add unknown log key
     for i, event_id in enumerate(df['EventId'].unique(), 1):
         event_id_map[event_id] = i
 

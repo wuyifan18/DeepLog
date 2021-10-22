@@ -14,7 +14,7 @@ def main(args, configs):
     train_dataset = LogDataset(args.data,
                                window_size=configs['window_size'],
                                vocab=args.vocab)
-    train_dataset = DataLoader(train_dataset,
+    train_dataloader = DataLoader(train_dataset,
                                batch_size=configs['batch_size'],
                                shuffle=configs['shuffle'],
                                pin_memory=True)
@@ -23,14 +23,16 @@ def main(args, configs):
         eval_dataset = LogDataset(args.eval_data,
                                   window_size=configs['window_size'],
                                   vocab=args.vocab)
-        eval_dataset = DataLoader(eval_dataset,
+        eval_dataloader = DataLoader(eval_dataset,
                                   batch_size=configs['batch_size'],
                                   shuffle=configs['shuffle'],
                                   pin_memory=True)
 
     # initialize model
     model = LogTransformer(num_class=configs['num_class'],
-                           encoder_hidden_size=configs['encoder_hidden_size'],
+                           vocab_size=train_dataset.get_vocab_size(),
+                           embed_size=configs['embed_size'],
+                           hidden_size=configs['hidden_size'],
                            decoder_hidden_size=configs['decoder_hidden_size'],
                            num_layer=configs['num_layer'],
                            num_head=configs['num_head'],
